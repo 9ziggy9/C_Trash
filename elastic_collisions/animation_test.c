@@ -7,9 +7,9 @@
 #define WINDOW_HEIGHT (480)
 
 // speed in pixels/second
-#define SPEED (300)
+#define SPEED (180)
+#define NUM (2)
 
-void initialize_particle(SDL_Renderer* renderer, SDL_Texture* texture, float POS_X, float POS_Y);
 void animate_particle(SDL_Renderer* renderer, SDL_Texture* texture, float VEL_X, float VEL_Y);
 int generate_particles(SDL_Renderer* renderer, SDL_Window* window, float VEL_X, float VEL_Y);
 
@@ -44,7 +44,7 @@ int main(void)
       return 1;
     }
     
-    generate_particles(rend, win, 2*SPEED, SPEED);
+    generate_particles(rend, win, SPEED, SPEED);
     
     // clean up resources before exiting
     // SDL_DestroyTexture(tex);
@@ -55,10 +55,10 @@ int main(void)
 
 int generate_particles(SDL_Renderer* renderer, SDL_Window* window, float VEL_X, float VEL_Y)
 {
-    SDL_Surface* surface[2];
-    SDL_Texture* tex[2];
+    SDL_Surface* surface[NUM];
+    SDL_Texture* tex[NUM];
 
-    for (int j=0; j<2; ++j)
+    for (int j=0; j<NUM; ++j)
     {
         // load the image into memory using SDL_image library function
         surface[j] = IMG_Load("resources/poke.png");
@@ -72,7 +72,7 @@ int generate_particles(SDL_Renderer* renderer, SDL_Window* window, float VEL_X, 
         }
     }
 
-    for(int k=0; k<2; ++k)
+    for(int k=0; k<NUM; ++k)
     {
         // load the image data into the graphics hardware's memory
         tex[k] = SDL_CreateTextureFromSurface(renderer, surface[k]);
@@ -95,73 +95,83 @@ int generate_particles(SDL_Renderer* renderer, SDL_Window* window, float VEL_X, 
 void animate_particle(SDL_Renderer* renderer, SDL_Texture* texture, float VEL_X, float VEL_Y)
 {
     // struct to hold the position and size of the sprite
-    SDL_Rect dest;
+    SDL_Rect dest[NUM];
+    float x_pos[NUM], y_pos[NUM], x_vel[NUM], y_vel[NUM];
 
-    // get and scale the dimensions of texture
-    SDL_QueryTexture(texture, NULL, NULL, &dest.w, &dest.h);
-    dest.w /= 4;
-    dest.h /= 4;
+    for (int i=0; i<NUM; ++i)
+    {
+        // get and scale the dimensions of texture
+        SDL_QueryTexture(texture, NULL, NULL, &dest[i].w, &dest[i].h);
+        dest[i].w /= 4;
+        dest[i].h /= 4;
 
-    // start sprite in center of screen
-    float x_pos = (WINDOW_WIDTH - dest.w) / 2;
-    float y_pos = (WINDOW_HEIGHT - dest.h) / 2;
+        // start sprite in center of screen
+        x_pos[i] = (WINDOW_WIDTH - dest[i].w) / 2;
+        y_pos[i] = (WINDOW_HEIGHT - dest[i].h) / 2;
 
-    // give sprite initial velocity
-    float x_vel = VEL_X;
-    float y_vel = VEL_Y;
+        // give sprite initial velocity
+        x_vel[i] = (i+1)*VEL_X;
+        y_vel[i] = (i+1)*VEL_Y;
+    }
 
     // set to 1 when window close button is pressed
     int close_requested = 0;
     
-    // animation loop
-    while (!close_requested)
-    {
-        // process events
-        SDL_Event event;
-        while (SDL_PollEvent(&event))
+        // animation loop
+        while (!close_requested)
         {
-            if (event.type == SDL_QUIT)
+            // process events
+            SDL_Event event;
+            while (SDL_PollEvent(&event))
             {
-                close_requested = 1;
+                if (event.type == SDL_QUIT)
+                {
+                    close_requested = 1;
+                }
             }
-        }
-        
-        // collision detection with bounds
-        if (x_pos <= 0)
-        {
-            x_pos = 0;
-            x_vel = -x_vel;
-        }
-        if (y_pos <= 0)
-        {
-            y_pos = 0;
-            y_vel = -y_vel;
-        }
-        if (x_pos >= WINDOW_WIDTH - dest.w) 
-        {
-            x_pos = WINDOW_WIDTH - dest.w;
-            x_vel = -x_vel;
-        }
-        if (y_pos >= WINDOW_HEIGHT - dest.h)
-        {
-            y_pos = WINDOW_HEIGHT - dest.h;
-            y_vel = -y_vel;
-        }
 
-        // update positions
-        x_pos += x_vel / 60;
-        y_pos += y_vel / 60;
+            for (int j=0; j<NUM; ++j)    
+            {
+                // collision detection with bounds
+                if (x_pos[j] <= 0)
+                {
+                    x_pos[j] = 0;
+                    x_vel[j] = -x_vel[j];
+                }
+                if (y_pos[j] <= 0)
+                {
+                    y_pos[j] = 0;
+                    y_vel[j] = -y_vel[j];
+                }
+                if (x_pos[j] >= WINDOW_WIDTH - dest[j].w) 
+                {
+                    x_pos[j] = WINDOW_WIDTH - dest[j].w;
+                    x_vel[j] = -x_vel[j];
+                }
+                if (y_pos[j] >= WINDOW_HEIGHT - dest[j].h)
+                {
+                    y_pos[j] = WINDOW_HEIGHT - dest[j].h;
+                    y_vel[j] = -y_vel[j];
+                }
 
-        // set the positions in the struct
-        dest.y = (int) y_pos;
-        dest.x = (int) x_pos;
-        
+                // update positions
+                x_pos[j] += x_vel[j] / 60;
+                y_pos[j] += y_vel[j] / 60;
+
+                // set the positions in the struct
+                dest[j].y = (int) y_pos[j];
+                dest[j].x = (int) x_pos[j];
+            }   
+
         // clear the window
         SDL_RenderClear(renderer);
 
-        // draw the image to the window
-        SDL_RenderCopy(renderer, texture, NULL, &dest);
-        SDL_RenderPresent(renderer);
+        for (int k=0; k<NUM; ++k)
+        {
+            // draw the image to the window
+            SDL_RenderCopy(renderer, texture, NULL, &dest[k]);
+            SDL_RenderPresent(renderer);
+        }
 
         // wait 1/60th of a second
         SDL_Delay(1000/60);
