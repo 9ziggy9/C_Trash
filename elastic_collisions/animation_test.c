@@ -8,7 +8,7 @@
 
 // speed in pixels/second
 #define SPEED (180)
-#define NUM (2)
+#define NUM (10)
 
 void animate_particle(SDL_Renderer* renderer, SDL_Texture* texture, float VEL_X, float VEL_Y);
 int generate_particles(SDL_Renderer* renderer, SDL_Window* window, float VEL_X, float VEL_Y);
@@ -47,10 +47,9 @@ int main(void)
     generate_particles(rend, win, SPEED, SPEED);
     
     // clean up resources before exiting
-    // SDL_DestroyTexture(tex);
-    // SDL_DestroyRenderer(rend);
-    // SDL_DestroyWindow(win);
-    // SDL_Quit();
+       SDL_DestroyRenderer(rend);
+       SDL_DestroyWindow(win);
+       SDL_Quit();
 }
 
 int generate_particles(SDL_Renderer* renderer, SDL_Window* window, float VEL_X, float VEL_Y)
