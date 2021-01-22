@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_image.h>
@@ -7,8 +8,8 @@
 #define WINDOW_HEIGHT (480)
 
 // speed in pixels/second
-#define SPEED (180)
-#define NUM (10)
+#define SPEED (15)
+#define NUM (6)
 
 void animate_particle(SDL_Renderer* renderer, SDL_Texture* texture, float VEL_X, float VEL_Y);
 int generate_particles(SDL_Renderer* renderer, SDL_Window* window, float VEL_X, float VEL_Y);
@@ -96,6 +97,8 @@ void animate_particle(SDL_Renderer* renderer, SDL_Texture* texture, float VEL_X,
     // struct to hold the position and size of the sprite
     SDL_Rect dest[NUM];
     float x_pos[NUM], y_pos[NUM], x_vel[NUM], y_vel[NUM];
+    float vx_jj, vx_lj, vx_jl, vx_ll, xx_jj, xx_ll, xx_jl, subjl_x, subjl_y, sublj_x, sublj_y;
+    float Dx_vel[NUM], Dy_vel[NUM];
 
     for (int i=0; i<NUM; ++i)
     {
@@ -153,13 +156,55 @@ void animate_particle(SDL_Renderer* renderer, SDL_Texture* texture, float VEL_X,
                     y_vel[j] = -y_vel[j];
                 }
 
+                for (int l=0; l<j; ++l)
+                {
+                    // collision detection with bounds
+                    if ((fabsf(x_pos[j] - x_pos[l]) <= dest[j].w) && (fabsf(y_pos[j] - y_pos[l]) <= dest[j].h))
+                    {
+                        vx_jj = x_vel[j]*x_pos[j] + y_vel[j]*y_pos[j];
+                        vx_lj = x_vel[l]*x_pos[j] + y_vel[l]*y_pos[j];
+                        vx_jl = x_vel[j]*x_pos[l] + y_vel[j]*y_pos[l];
+                        vx_ll = x_vel[l]*x_pos[l] + y_vel[l]*y_pos[l];
+
+                        xx_jj = x_pos[j]*x_pos[j] + y_pos[j]*y_pos[j];
+                        xx_ll = x_pos[l]*x_pos[l] + y_pos[l]*y_pos[l];
+                        xx_jl = x_pos[j]*x_pos[l] + y_pos[j]*y_pos[l];
+
+                        subjl_x = x_pos[j] - x_pos[l];
+                        subjl_y = y_pos[j] - y_pos[l];
+                        sublj_x = x_pos[l] - x_pos[j];
+                        sublj_y = y_pos[l] - y_pos[j];
+
+                        Dx_vel[j] = x_vel[j] - (((vx_jj - vx_lj - vx_jl + vx_ll) / (xx_jj + xx_ll - (2 * xx_jl))) * subjl_x );
+                        Dy_vel[j] = y_vel[j] - (((vx_jj - vx_lj - vx_jl + vx_ll) / (xx_jj + xx_ll - (2 * xx_jl))) * subjl_y );
+                        Dx_vel[l] = x_vel[l] - (((vx_jj - vx_lj - vx_jl + vx_ll) / (xx_jj + xx_ll - (2 * xx_jl))) * sublj_x );
+                        Dy_vel[l] = y_vel[l] - (((vx_jj - vx_lj - vx_jl + vx_ll) / (xx_jj + xx_ll - (2 * xx_jl))) * sublj_y );
+
+                        x_vel[j] = Dx_vel[j];
+                        x_vel[l] = Dx_vel[l];
+                        y_vel[j] = Dy_vel[j];
+                        y_vel[l] = Dy_vel[l];
+
+                        /* x_vel[j] = -x_vel[j]; */
+                        /* y_vel[j] = -y_vel[j]; */
+                        /* x_vel[l] = x_vel[l]; */
+                        /* y_vel[l] = y_vel[l]; */
+                    }
+                        for (int m=0; m<NUM; ++m)
+                        {
+                            x_pos[m] += x_vel[m] / 60;
+                            y_pos[m] += y_vel[m] / 60;
+                        }
+                }
+
                 // update positions
-                x_pos[j] += x_vel[j] / 60;
-                y_pos[j] += y_vel[j] / 60;
+                /* x_pos[j] += x_vel[j] / 60; */
+                /* y_pos[j] += y_vel[j] / 60; */
 
                 // set the positions in the struct
                 dest[j].y = (int) y_pos[j];
                 dest[j].x = (int) x_pos[j];
+
             }   
 
         // clear the window
