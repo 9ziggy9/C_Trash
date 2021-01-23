@@ -175,20 +175,19 @@ void animate_particle(SDL_Renderer* renderer, SDL_Texture* texture, float VEL_X,
                         sublj_x = x_pos[l] - x_pos[j];
                         sublj_y = y_pos[l] - y_pos[j];
 
-                        Dx_vel[j] = x_vel[j] - (((vx_jj - vx_lj - vx_jl + vx_ll) / (xx_jj + xx_ll - (2 * xx_jl))) * subjl_x );
-                        Dy_vel[j] = y_vel[j] - (((vx_jj - vx_lj - vx_jl + vx_ll) / (xx_jj + xx_ll - (2 * xx_jl))) * subjl_y );
-                        Dx_vel[l] = x_vel[l] - (((vx_jj - vx_lj - vx_jl + vx_ll) / (xx_jj + xx_ll - (2 * xx_jl))) * sublj_x );
-                        Dy_vel[l] = y_vel[l] - (((vx_jj - vx_lj - vx_jl + vx_ll) / (xx_jj + xx_ll - (2 * xx_jl))) * sublj_y );
+                        Dx_vel[j] = x_vel[j] - (((vx_jj - vx_lj - vx_jl + vx_ll) / 
+                                    (xx_jj + xx_ll - (2 * xx_jl))) * subjl_x );
+                        Dy_vel[j] = y_vel[j] - (((vx_jj - vx_lj - vx_jl + vx_ll) / 
+                                    (xx_jj + xx_ll - (2 * xx_jl))) * subjl_y );
+                        Dx_vel[l] = x_vel[l] - (((vx_jj - vx_lj - vx_jl + vx_ll) / 
+                                    (xx_jj + xx_ll - (2 * xx_jl))) * sublj_x );
+                        Dy_vel[l] = y_vel[l] - (((vx_jj - vx_lj - vx_jl + vx_ll) / 
+                                    (xx_jj + xx_ll - (2 * xx_jl))) * sublj_y );
 
                         x_vel[j] = Dx_vel[j];
                         x_vel[l] = Dx_vel[l];
                         y_vel[j] = Dy_vel[j];
                         y_vel[l] = Dy_vel[l];
-
-                        /* x_vel[j] = -x_vel[j]; */
-                        /* y_vel[j] = -y_vel[j]; */
-                        /* x_vel[l] = x_vel[l]; */
-                        /* y_vel[l] = y_vel[l]; */
                     }
                         for (int m=0; m<NUM; ++m)
                         {
@@ -196,10 +195,6 @@ void animate_particle(SDL_Renderer* renderer, SDL_Texture* texture, float VEL_X,
                             y_pos[m] += y_vel[m] / 60;
                         }
                 }
-
-                // update positions
-                /* x_pos[j] += x_vel[j] / 60; */
-                /* y_pos[j] += y_vel[j] / 60; */
 
                 // set the positions in the struct
                 dest[j].y = (int) y_pos[j];
