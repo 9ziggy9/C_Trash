@@ -176,7 +176,7 @@ void animate_particle(SDL_Renderer* renderer, SDL_Texture* texture, float VEL_X,
 
             for (int j=0; j<NUM; ++j)    
             {
-                // collision detection with bounds
+                // collision detection on bounds
                 if (x_pos[j] <= 0)
                 {
                     x_pos[j] = 0;
@@ -200,7 +200,9 @@ void animate_particle(SDL_Renderer* renderer, SDL_Texture* texture, float VEL_X,
 
                 for (int l=0; l<j; ++l)
                 {
-                    // collision detection with bounds
+                    // collision detection on particles: these are components of vector representation of 2d
+                    // elastic particles colliding.
+                    
                     if ((fabsf(x_pos[j] - x_pos[l]) <= dest[j].w) && (fabsf(y_pos[j] - y_pos[l]) <= dest[j].h))
                     {
                         vx_jj = x_vel[j]*x_pos[j] + y_vel[j]*y_pos[j];
