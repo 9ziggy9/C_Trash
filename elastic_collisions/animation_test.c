@@ -13,7 +13,7 @@
 #define SPEED (30)
 #define NUM (5)
 
-void animate_particle(SDL_Renderer* renderer, SDL_Texture* texture, float VEL_X, float VEL_Y);
+void physics(SDL_Renderer* renderer, SDL_Texture* texture, float VEL_X, float VEL_Y);
 int generate_particles(SDL_Renderer* renderer, SDL_Window* window, float VEL_X, float VEL_Y);
 
 int main(void)
@@ -89,12 +89,12 @@ int generate_particles(SDL_Renderer* renderer, SDL_Window* window, float VEL_X, 
         }
     }
 
-    animate_particle(renderer, *tex, VEL_X, VEL_Y);
+    physics(renderer, *tex, VEL_X, VEL_Y);
 
     return 0;
 }
 
-void animate_particle(SDL_Renderer* renderer, SDL_Texture* texture, float VEL_X, float VEL_Y)
+void physics(SDL_Renderer* renderer, SDL_Texture* texture, float VEL_X, float VEL_Y)
 {
     // struct to hold the position and size of the sprite
     SDL_Rect dest[NUM];
@@ -200,9 +200,7 @@ void animate_particle(SDL_Renderer* renderer, SDL_Texture* texture, float VEL_X,
 
                 for (int l=0; l<j; ++l)
                 {
-                    // collision detection on particles: these are components of vector representation of 2d
-                    // elastic particles colliding.
-                    
+                    // collision detection on particles
                     if ((fabsf(x_pos[j] - x_pos[l]) <= dest[j].w) && (fabsf(y_pos[j] - y_pos[l]) <= dest[j].h))
                     {
                         vx_jj = x_vel[j]*x_pos[j] + y_vel[j]*y_pos[j];
