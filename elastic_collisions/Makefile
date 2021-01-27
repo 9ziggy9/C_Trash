@@ -13,7 +13,7 @@ SRCS := main.c physics.c
 OBJS := $(SRCS:.c=.o)
 
 # name of executable
-EXEC := run
+EXEC := pbox
 
 # default recipe
 all: $(EXEC)

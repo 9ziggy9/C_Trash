@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <unistd.h>
 #include <time.h>
 #include <math.h>
 #include <SDL2/SDL.h>
@@ -8,12 +9,38 @@
 #include <SDL2/SDL_image.h>
 #include "physics.h"
 
-int main(void)
+int main(int argc, char *argv[])
 {
-    int SPEED = 5;
-    int NUM = 7;
     int WINDOW_WIDTH = 640;
     int WINDOW_HEIGHT = 480;
+    int opt;
+    char *number_value = NULL;
+    char *speed_value = NULL;
+
+    opterr = 0;
+
+    while ((opt = getopt(argc, argv, "n:s:")) != -1)
+        switch (opt)
+        {
+            case 'n':
+                number_value = optarg;
+                break;
+            case 's':
+                speed_value = optarg;
+                break;
+            case '?':
+                fprintf (stderr, "Unknown options");
+                return 1;
+            default:
+                abort ();
+        }
+
+    int NUM = atoi(number_value);
+    int SPEED = atoi(speed_value);
+
+    printf("\nNumber of particles: %d\n", NUM);
+    printf("Particle speed: %d\n", SPEED);
+    printf("\n");
 
     // attempt to initialize graphics and timer system
     if (SDL_Init(SDL_INIT_VIDEO|SDL_INIT_TIMER) != 0)
