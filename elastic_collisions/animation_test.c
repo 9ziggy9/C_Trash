@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
+#include <time.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_image.h>
@@ -8,8 +10,8 @@
 #define WINDOW_HEIGHT (480)
 
 // speed in pixels/second
-#define SPEED (15)
-#define NUM (6)
+#define SPEED (30)
+#define NUM (5)
 
 void animate_particle(SDL_Renderer* renderer, SDL_Texture* texture, float VEL_X, float VEL_Y);
 int generate_particles(SDL_Renderer* renderer, SDL_Window* window, float VEL_X, float VEL_Y);
@@ -99,6 +101,10 @@ void animate_particle(SDL_Renderer* renderer, SDL_Texture* texture, float VEL_X,
     float x_pos[NUM], y_pos[NUM], x_vel[NUM], y_vel[NUM];
     float vx_jj, vx_lj, vx_jl, vx_ll, xx_jj, xx_ll, xx_jl, subjl_x, subjl_y, sublj_x, sublj_y;
     float Dx_vel[NUM], Dy_vel[NUM];
+    int X, Y;
+    int particle = 0;
+    bool occupied = 1;
+    bool unoccupied = 0;
 
     for (int i=0; i<NUM; ++i)
     {
@@ -106,14 +112,50 @@ void animate_particle(SDL_Renderer* renderer, SDL_Texture* texture, float VEL_X,
         SDL_QueryTexture(texture, NULL, NULL, &dest[i].w, &dest[i].h);
         dest[i].w /= 4;
         dest[i].h /= 4;
+    }
 
-        // start sprite in center of screen
-        x_pos[i] = (WINDOW_WIDTH - dest[i].w) / 2;
-        y_pos[i] = (WINDOW_HEIGHT - dest[i].h) / 2;
+    unsigned int MAX_X = WINDOW_WIDTH / dest[0].w;
+    unsigned int MAX_Y = WINDOW_HEIGHT / dest[0].h;
+    bool grid[MAX_X][MAX_Y];
 
-        // give sprite initial velocity
-        x_vel[i] = (i+1)*VEL_X;
-        y_vel[i] = (i+1)*VEL_Y;
+    // seed RNG
+    srand(time(NULL));
+
+    // set grid to unoccupied
+    for(int i=0; i<MAX_X; ++i)
+        for(int j=0; j<MAX_Y; ++j)
+            grid[i][j] = unoccupied;
+
+    // randomly fill grid
+    for(int count=0; count<NUM; ++count)
+    {
+        X = rand() % MAX_X;
+        Y = rand() % MAX_Y;
+        
+        if (!grid[X][Y])
+            grid[X][Y] = occupied;
+        else
+            --count;
+    }
+
+    for(int count_y=0; count_y<MAX_Y; ++count_y)
+    {
+        for(int count_x=0; count_x<MAX_X; ++count_x)
+        {
+            if (grid[count_x][count_y])
+            {
+                // start sprite in grid location
+                x_pos[particle] = count_x * dest[0].w;
+                y_pos[particle] = count_y * dest[0].h;
+
+                // give sprite initial velocity
+                x_vel[particle] = pow(-1, rand()%2) * (rand()%3 + 1) * SPEED;
+                y_vel[particle] = pow(-1, rand()%2) * (rand()%3 + 1) * SPEED;
+
+                ++particle;
+                printf("Particle %d generated.\n", particle);
+            }      
+        }
     }
 
     // set to 1 when window close button is pressed
