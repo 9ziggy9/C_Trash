@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
+#include <math.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_image.h>
@@ -9,8 +10,8 @@
 
 int main(void)
 {
-    int SPEED = 30;
-    int NUM = 5;
+    int SPEED = 5;
+    int NUM = 7;
     int WINDOW_WIDTH = 640;
     int WINDOW_HEIGHT = 480;
 
@@ -46,7 +47,7 @@ int main(void)
     generate_particles(rend, win, SPEED, SPEED, NUM, WINDOW_WIDTH, WINDOW_HEIGHT);
     
     // clean up resources before exiting
-       SDL_DestroyRenderer(rend);
-       SDL_DestroyWindow(win);
-       SDL_Quit();
+    SDL_DestroyRenderer(rend);
+    SDL_DestroyWindow(win);
+    SDL_Quit();
 }

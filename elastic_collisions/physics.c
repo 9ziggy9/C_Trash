@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <time.h>
+#include <math.h>
 #include <SDL2/SDL.h>
 #include <SDL2/SDL_timer.h>
 #include <SDL2/SDL_image.h>
@@ -155,7 +156,7 @@ void physics(SDL_Renderer* renderer, SDL_Texture* texture, float SPEED_X, float 
                 for (int l=0; l<j; ++l)
                 {
                     // collision detection on particles
-                    if ((fabsf(x_pos[j] - x_pos[l]) <= dest[j].w) && (fabsf(y_pos[j] - y_pos[l]) <= dest[j].h))
+                    if ((fabsf(x_pos[j] - x_pos[l]) <= dest[0].w) && (fabsf(y_pos[j] - y_pos[l]) <= dest[0].w))
                     {
                         vx_jj = x_vel[j]*x_pos[j] + y_vel[j]*y_pos[j];
                         vx_lj = x_vel[l]*x_pos[j] + y_vel[l]*y_pos[j];
@@ -209,6 +210,7 @@ void physics(SDL_Renderer* renderer, SDL_Texture* texture, float SPEED_X, float 
         }
 
         // wait 1/60th of a second
+        //SDL_Delay((NUM*1000)/(60*(NUM+1)));
         SDL_Delay(1000/60);
     }
 }
