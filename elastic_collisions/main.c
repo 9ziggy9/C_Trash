@@ -57,7 +57,7 @@ int main(int argc, char *argv[])
     {
         printf("error creating window: %s\n", SDL_GetError());
         SDL_Quit();
-	    return 1;
+	      return 1;
     }
 
     // create a renderer, which sets up the graphics hardware

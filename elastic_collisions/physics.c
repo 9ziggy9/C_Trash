@@ -123,9 +123,16 @@ void physics(SDL_Renderer* renderer, SDL_Texture* texture, float SPEED_X, float 
             SDL_Event event;
             while (SDL_PollEvent(&event))
             {
-                if (event.type == SDL_QUIT)
+                switch(event.type)
                 {
-                    close_requested = 1;
+                    case SDL_QUIT:
+                        close_requested = 1;
+                        break;
+                    case SDL_KEYDOWN:
+                        close_requested = 1;
+                        break;
+                    default:
+                        break;
                 }
             }
 
@@ -196,7 +203,6 @@ void physics(SDL_Renderer* renderer, SDL_Texture* texture, float SPEED_X, float 
                 // set the positions in the struct
                 dest[j].y = (int) y_pos[j];
                 dest[j].x = (int) x_pos[j];
-
             }   
 
         // clear the window
