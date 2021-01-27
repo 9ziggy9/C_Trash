@@ -4,16 +4,16 @@ CC := clang
 # set the compiler flags
 CFLAGS := `sdl2-config --libs --cflags` -ggdb3 -O0 --std=c99 -Wall -lSDL2_image -lm
 # add header files here
-HDRS :=
+HDRS := physics.h
 
 # add source files here
-SRCS := animation_test.c
+SRCS := main.c physics.c
 
 # generate names of object files
 OBJS := $(SRCS:.c=.o)
 
 # name of executable
-EXEC := test
+EXEC := run
 
 # default recipe
 all: $(EXEC)
