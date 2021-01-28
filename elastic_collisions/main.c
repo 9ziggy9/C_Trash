@@ -71,7 +71,7 @@ int main(int argc, char *argv[])
       return 1;
     }
     
-    generate_particles(rend, win, SPEED, SPEED, NUM, WINDOW_WIDTH, WINDOW_HEIGHT);
+    generate_particles(rend, win, SPEED, SPEED, NUM, WINDOW_WIDTH, WINDOW_HEIGHT                         );
     
     // clean up resources before exiting
     SDL_DestroyRenderer(rend);

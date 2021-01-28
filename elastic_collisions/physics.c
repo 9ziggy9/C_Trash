@@ -8,8 +8,7 @@
 #include <SDL2/SDL_image.h>
 #include "physics.h"
 
-int generate_particles(SDL_Renderer* renderer, SDL_Window* window, float SPEED_X, float SPEED_Y, int NUM,
-                        int WINDOW_WIDTH, int WINDOW_HEIGHT)
+int generate_particles(SDL_Renderer* renderer, SDL_Window* window, float SPEED_X                , float SPEED_Y, int NUM, int WINDOW_WIDTH, int WINDOW_HEIGHT)
 {
     SDL_Surface* surface[NUM];
     SDL_Texture* tex[NUM];
@@ -48,13 +47,13 @@ int generate_particles(SDL_Renderer* renderer, SDL_Window* window, float SPEED_X
     return 0;
 }
 
-void physics(SDL_Renderer* renderer, SDL_Texture* texture, float SPEED_X, float SPEED_Y, int NUM,
-                int WINDOW_WIDTH, int WINDOW_HEIGHT)
+void physics(SDL_Renderer* renderer, SDL_Texture* texture, float SPEED_X, float              SPEED_Y, int NUM, int WINDOW_WIDTH, int WINDOW_HEIGHT)
 {
     // struct to hold the position and size of the sprite
     SDL_Rect dest[NUM];
     float x_pos[NUM], y_pos[NUM], x_vel[NUM], y_vel[NUM];
-    float vx_jj, vx_lj, vx_jl, vx_ll, xx_jj, xx_ll, xx_jl, subjl_x, subjl_y, sublj_x, sublj_y;
+    float vx_jj, vx_lj, vx_jl, vx_ll, xx_jj, xx_ll, xx_jl, subjl_x, subjl_y, 
+          sublj_x, sublj_y;
     float Dx_vel[NUM], Dy_vel[NUM];
     int X, Y;
     int particle = 0;
@@ -104,8 +103,8 @@ void physics(SDL_Renderer* renderer, SDL_Texture* texture, float SPEED_X, float 
                 y_pos[particle] = count_y * dest[0].h;
 
                 // give sprite initial velocity
-                x_vel[particle] = pow(-1, rand()%2) * (rand()%3 + 1) * SPEED_X;
-                y_vel[particle] = pow(-1, rand()%2) * (rand()%3 + 1) * SPEED_Y;
+                x_vel[particle] = pow(-1, rand()%2) * SPEED_X;
+                y_vel[particle] = pow(-1, rand()%2) * SPEED_Y;
 
                 ++particle;
                 printf("Particle %d generated.\n", particle);
@@ -163,7 +162,8 @@ void physics(SDL_Renderer* renderer, SDL_Texture* texture, float SPEED_X, float 
                 for (int l=0; l<j; ++l)
                 {
                     // collision detection on particles
-                    if ((fabsf(x_pos[j] - x_pos[l]) <= dest[0].w) && (fabsf(y_pos[j] - y_pos[l]) <= dest[0].w))
+                    if ((fabsf(x_pos[j] - x_pos[l]) <= dest[0].w) && 
+                        (fabsf(y_pos[j] - y_pos[l]) <= dest[0].w))
                     {
                         vx_jj = x_vel[j]*x_pos[j] + y_vel[j]*y_pos[j];
                         vx_lj = x_vel[l]*x_pos[j] + y_vel[l]*y_pos[j];
@@ -179,14 +179,13 @@ void physics(SDL_Renderer* renderer, SDL_Texture* texture, float SPEED_X, float 
                         sublj_x = x_pos[l] - x_pos[j];
                         sublj_y = y_pos[l] - y_pos[j];
 
-                        Dx_vel[j] = x_vel[j] - (((vx_jj - vx_lj - vx_jl + vx_ll) / 
-                                    (xx_jj + xx_ll - (2 * xx_jl))) * subjl_x );
-                        Dy_vel[j] = y_vel[j] - (((vx_jj - vx_lj - vx_jl + vx_ll) / 
-                                    (xx_jj + xx_ll - (2 * xx_jl))) * subjl_y );
-                        Dx_vel[l] = x_vel[l] - (((vx_jj - vx_lj - vx_jl + vx_ll) / 
-                                    (xx_jj + xx_ll - (2 * xx_jl))) * sublj_x );
-                        Dy_vel[l] = y_vel[l] - (((vx_jj - vx_lj - vx_jl + vx_ll) / 
-                                    (xx_jj + xx_ll - (2 * xx_jl))) * sublj_y );
+                        Dx_vel[j] = x_vel[j] - (((vx_jj - vx_lj - vx_jl + vx_ll)                                / (xx_jj + xx_ll - (2 * xx_jl))) * subjl_x );
+                        
+                        Dy_vel[j] = y_vel[j] - (((vx_jj - vx_lj - vx_jl + vx_ll)                                / (xx_jj + xx_ll - (2 * xx_jl))) * subjl_y );
+                        
+                        Dx_vel[l] = x_vel[l] - (((vx_jj - vx_lj - vx_jl + vx_ll)                                / (xx_jj + xx_ll - (2 * xx_jl))) * sublj_x );
+                        
+                        Dy_vel[l] = y_vel[l] - (((vx_jj - vx_lj - vx_jl + vx_ll)                                / (xx_jj + xx_ll - (2 * xx_jl))) * sublj_y );
 
                         x_vel[j] = Dx_vel[j];
                         x_vel[l] = Dx_vel[l];
@@ -215,8 +214,7 @@ void physics(SDL_Renderer* renderer, SDL_Texture* texture, float SPEED_X, float 
             SDL_RenderPresent(renderer);
         }
 
-        // wait 1/60th of a second
-        //SDL_Delay((NUM*1000)/(60*(NUM+1)));
-        SDL_Delay(1000/60);
+        // wait
+        SDL_Delay(1000/((NUM+1)*30));
     }
 }
