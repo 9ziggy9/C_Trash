@@ -8,7 +8,7 @@
 #include <SDL2/SDL_image.h>
 #include "physics.h"
 
-int generate_particles(SDL_Renderer* renderer, SDL_Window* window, float SPEED_X                , float SPEED_Y, int NUM, int WINDOW_WIDTH, int WINDOW_HEIGHT)
+int generate_particles(SDL_Renderer* renderer, SDL_Window* window, float SPEED_X, float SPEED_Y, int NUM, int WINDOW_WIDTH, int WINDOW_HEIGHT)
 {
     SDL_Surface* surface[NUM];
     SDL_Texture* tex[NUM];
@@ -47,7 +47,7 @@ int generate_particles(SDL_Renderer* renderer, SDL_Window* window, float SPEED_X
     return 0;
 }
 
-void physics(SDL_Renderer* renderer, SDL_Texture* texture, float SPEED_X, float              SPEED_Y, int NUM, int WINDOW_WIDTH, int WINDOW_HEIGHT)
+void physics(SDL_Renderer* renderer, SDL_Texture* texture, float SPEED_X, float SPEED_Y, int NUM, int WINDOW_WIDTH, int WINDOW_HEIGHT)
 {
     // struct to hold the position and size of the sprite
     SDL_Rect dest[NUM];
@@ -179,13 +179,13 @@ void physics(SDL_Renderer* renderer, SDL_Texture* texture, float SPEED_X, float 
                         sublj_x = x_pos[l] - x_pos[j];
                         sublj_y = y_pos[l] - y_pos[j];
 
-                        Dx_vel[j] = x_vel[j] - (((vx_jj - vx_lj - vx_jl + vx_ll)                                / (xx_jj + xx_ll - (2 * xx_jl))) * subjl_x );
+                        Dx_vel[j] = x_vel[j] - (((vx_jj - vx_lj - vx_jl + vx_ll) / (xx_jj + xx_ll - (2 * xx_jl))) * subjl_x );
                         
-                        Dy_vel[j] = y_vel[j] - (((vx_jj - vx_lj - vx_jl + vx_ll)                                / (xx_jj + xx_ll - (2 * xx_jl))) * subjl_y );
+                        Dy_vel[j] = y_vel[j] - (((vx_jj - vx_lj - vx_jl + vx_ll) / (xx_jj + xx_ll - (2 * xx_jl))) * subjl_y );
                         
-                        Dx_vel[l] = x_vel[l] - (((vx_jj - vx_lj - vx_jl + vx_ll)                                / (xx_jj + xx_ll - (2 * xx_jl))) * sublj_x );
+                        Dx_vel[l] = x_vel[l] - (((vx_jj - vx_lj - vx_jl + vx_ll) / (xx_jj + xx_ll - (2 * xx_jl))) * sublj_x );
                         
-                        Dy_vel[l] = y_vel[l] - (((vx_jj - vx_lj - vx_jl + vx_ll)                                / (xx_jj + xx_ll - (2 * xx_jl))) * sublj_y );
+                        Dy_vel[l] = y_vel[l] - (((vx_jj - vx_lj - vx_jl + vx_ll) / (xx_jj + xx_ll - (2 * xx_jl))) * sublj_y );
 
                         x_vel[j] = Dx_vel[j];
                         x_vel[l] = Dx_vel[l];
