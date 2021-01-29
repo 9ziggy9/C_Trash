@@ -8,7 +8,8 @@
 #include <SDL2/SDL_image.h>
 #include "physics.h"
 
-int generate_particles(SDL_Renderer* renderer, SDL_Window* window, float SPEED_X, float SPEED_Y, int NUM, int WINDOW_WIDTH, int WINDOW_HEIGHT)
+int generate_particles(SDL_Renderer* renderer, SDL_Window* window, float SPEED_X, 
+        float SPEED_Y, int NUM, int WINDOW_WIDTH, int WINDOW_HEIGHT)
 {
     SDL_Surface* surface[NUM];
     SDL_Texture* tex[NUM];
