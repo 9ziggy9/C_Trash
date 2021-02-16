@@ -35,8 +35,8 @@ void populate_segment_array(int *array)
 {
 	int step = WINDOW_HEIGHT / NUM;
 
-	for (int n=1; n<=NUM; n++)
-		array[n] = step * n;
+	for (int n=0; n<NUM; n++)
+		array[n] = step * (n+1);
 }
 
 void swap(int *a, int *b)
@@ -65,9 +65,6 @@ void draw_segments(int *height)
 	SDL_SetRenderDrawColor(rend, 251, 241, 199, 255);
 	segment.y = WINDOW_HEIGHT;
 	segment.w = SEGMENT_WIDTH;
-
-	populate_segment_array(height);
-	shuffle_segments(height, NUM);
 
 	for (int n=0; n<NUM; n++) 
 	{
