@@ -7,10 +7,10 @@ CC := clang
 CFLAGS := `sdl2-config --libs --cflags` -ggdb3 -O0 --std=c99 -Wall -lSDL2_image -lm -lSDL2_gfx -lSDL2_ttf
 
 # add header files here
-HDRS :=
+HDRS := toot.h 
 
 # add source files here
-SRCS := main.c
+SRCS := main.c toot.c
 
 # generate names of object files
 OBJS := $(SRCS:.c=.o)

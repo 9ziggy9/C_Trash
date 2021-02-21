@@ -14,6 +14,9 @@
 #include <stdbool.h>
 #include <stdlib.h>
 #include <stdio.h>
+// Audio: toot. Thank you very much, Guillaume Vareille!
+// Please see toot.h/toot.c for further information..
+#include "toot.h"
 // MACROS: remember to replace with getopts
 #define WINDOW_WIDTH 960
 #define WINDOW_HEIGHT 640
@@ -121,10 +124,7 @@ void draw_initially(int *array)
 		segment.h = - array[n]; // NOTE: direction of increasing y reversed in SDL
 		SDL_RenderFillRect(rend, &segment); // draw
 		SDL_RenderPresent(rend);
-
-		// added delay for step effect, usleep is actually DEPRECATED now,
-		// please return and replace with nanosleep()!
-		usleep(15000);
+		toot(10*array[n], 1);
 	}
 }
 
@@ -146,10 +146,7 @@ void draw_finally(int *array)
 		segment.h = - array[n]; // NOTE: direction of increasing y reversed in SDL
 		SDL_RenderFillRect(rend, &segment); // draw
 		SDL_RenderPresent(rend);
-
-		// added delay for step effect, usleep is actually DEPRECATED now,
-		// please return and replace with nanosleep()!
-		usleep(15000);
+		toot(10*array[n], 1);
 	}
 }
 
@@ -192,8 +189,8 @@ void insertionSort(int *array, int n)
 		array[j + 1] = element; 
 		highlight[j+1] = true;
 		draw_state(array, highlight);
+		toot(10*array[j], 20);
 		unhighlight_segments(highlight);
-		usleep(50000);
 	} 
 	unhighlight_segments(highlight);
 	draw_state(array, highlight);
@@ -224,10 +221,12 @@ int main()
 	// INITIAL CONDITIONS: Seed RNG, populate array and apply Fisher-Yates shuffle.
 	// Please note that draw_initially() contains a usleep() call. usleep() is
 	// now deprecated and should be replaced ny nanosleep() in the future.
+	// !!! Usage of toot allows us to circumvent usleep calls !!!
 	srand(time(NULL));
 	populate_segment_height(segment_height);
 	shuffle_segments(segment_height, NUM);
 	draw_initially(segment_height);
+	sleep(1); //let them breath it in a second
 
 	// RUNNING STATE //
 	while (running) 
