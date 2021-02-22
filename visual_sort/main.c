@@ -1,5 +1,6 @@
 // Suppress usleep() usage warning
-#define _XOPEN_SOURCE 500
+// #define _XOPEN_SOURCE 500
+// I'm keeping this here just in case I reimplement beeping and need it.
 
 // SDL2 libraries
 #include <SDL2/SDL.h>
@@ -20,7 +21,7 @@
 // MACROS: remember to replace with getopts
 #define WINDOW_WIDTH 960
 #define WINDOW_HEIGHT 640
-#define NUM 96
+#define NUM 192
 
 bool running;
 
@@ -196,9 +197,94 @@ void insertionSort(int *array, int n)
 	draw_state(array, highlight);
 } 
 
+// Heap Sort
+void heapify(int *array, int n, int i) 
+{
+	int max = i;
+	int leftChild = 2 * i + 1;
+	int rightChild = 2 * i + 2;
+
+	if (leftChild < n && array[leftChild] > array[max])
+		max = leftChild;
+
+	if (rightChild < n && array[rightChild] > array[max])
+		max = rightChild;
+
+	if (max != i) {
+		swap(&array[i], &array[max]);
+		heapify(array, n, max);
+	}
+}
+  
+void heapSort(int *array, int n) 
+{
+	bool highlight[NUM] = {false};
+    
+	for (int i = n / 2 - 1; i >= 0; i--) {
+		heapify(array, n, i);
+		highlight[i] = true;
+		draw_state(array, highlight);
+		toot(10*array[i], 20);
+		unhighlight_segments(highlight);
+	}
+  
+  for (int i = n - 1; i >= 0; i--) {
+    swap(&array[0], &array[i]);
+    heapify(array, i, 0);
+		highlight[i] = true;
+		draw_state(array, highlight);
+		toot(10*array[i], 20);
+		unhighlight_segments(highlight);
+  }
+}
+
+// Quicksort
+void quickSort(int *array, int first, int last) 
+{
+	int i, j, pivot, tmp;
+	bool highlight[NUM] = {false};
+
+	if(first<last) {
+		pivot=first;
+		i=first;
+		j=last;
+		while(i<j) {
+			while(array[i]<=array[pivot]&&i<last)
+				i++;
+			while(array[j]>array[pivot])
+				j--;
+			
+			if(i<j) {
+				tmp=array[i];
+				array[i]=array[j];
+				array[j]=tmp;
+			}
+		}
+		tmp=array[pivot];
+		array[pivot]=array[j];
+		highlight[pivot] = true;
+		array[j]=tmp;
+		draw_state(array, highlight);
+		toot(10*array[i], 20);
+		unhighlight_segments(highlight);
+
+		quickSort(array,first,j-1);
+		highlight[first] = true;
+		draw_state(array, highlight);
+		toot(10*array[i], 20);
+		unhighlight_segments(highlight);
+		
+		quickSort(array,j+1,last);
+		highlight[last] = true;
+		draw_state(array, highlight);
+		toot(10*array[i], 20);
+		unhighlight_segments(highlight);
+	}
+}
+
 int main()
 {
-	running = 1; // running state is acted upon by input()
+	running = true; // running state is acted upon by input()
 	bool SORT_COMPLETE = false;
 	int segment_height[NUM]; // array of segment arrays, primary argument
 	
@@ -245,10 +331,22 @@ int main()
 		
 		if(!SORT_COMPLETE) {
 			insertionSort(segment_height, NUM);
-			SORT_COMPLETE = true;
 			draw_finally(segment_height);
-		}
+			
+			shuffle_segments(segment_height, NUM);
+			draw_initially(segment_height);
+			sleep(1);
+			quickSort(segment_height, 0, NUM - 1);
+			draw_finally(segment_height);
 
+			shuffle_segments(segment_height, NUM);
+			draw_initially(segment_height);
+			sleep(1);
+			heapSort(segment_height, NUM);
+			draw_finally(segment_height);
+
+			SORT_COMPLETE = true;
+		}
 	}
 
 	SDL_DestroyRenderer(rend);
