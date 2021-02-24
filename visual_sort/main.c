@@ -375,7 +375,7 @@ int main(int argc, char *argv[])
 			frameCount = 0;
 		}
 
-		// look for input.
+		// look for input
 		input();
 		
 		if(!SORT_COMPLETE) {
@@ -395,6 +395,7 @@ int main(int argc, char *argv[])
 		}
 	}
 
+	// clean up
 	SDL_DestroyRenderer(rend);
 	SDL_DestroyWindow(win);
 	SDL_Quit();
