@@ -18,10 +18,10 @@
 // Audio: toot. Thank you very much, Guillaume Vareille!
 // Please see toot.h/toot.c for further information..
 #include "toot.h"
-// MACROS: remember to replace with getopts
+// MACROS
 #define WINDOW_WIDTH 960
 #define WINDOW_HEIGHT 640
-#define NUM 192
+#define MAX_NUMBER 641
 
 bool running;
 
@@ -52,7 +52,7 @@ void render_backsplash()
 	SDL_RenderFillRect(rend, &rect);
 }
 
-void populate_segment_height(int *array)
+void populate_segment_height(int *array, int NUM)
 {
 	int step = WINDOW_HEIGHT / NUM;
 
@@ -67,7 +67,7 @@ void swap(int *a, int *b)
 	*b = tmp;
 }
 
-void unhighlight_segments(bool *hl)
+void unhighlight_segments(bool *hl, int NUM)
 {
 	for(int j=0; j<NUM; j++)
 		hl[j] = false;
@@ -83,7 +83,7 @@ void shuffle_segments(int *array, int n)
 	}
 }
 
-void draw_segments(int *array, bool *hl)
+void draw_segments(int *array, bool *hl, int NUM)
 {
 	int SEGMENT_WIDTH = WINDOW_WIDTH / NUM;
 
@@ -107,7 +107,7 @@ void draw_segments(int *array, bool *hl)
 	}
 }
 
-void draw_initially(int *array)
+void draw_initially(int *array, int NUM)
 {
 	int SEGMENT_WIDTH = WINDOW_WIDTH / NUM;
 	
@@ -129,7 +129,7 @@ void draw_initially(int *array)
 	}
 }
 
-void draw_finally(int *array)
+void draw_finally(int *array, int NUM)
 {
 	int SEGMENT_WIDTH = WINDOW_WIDTH / NUM;
 	
@@ -151,12 +151,12 @@ void draw_finally(int *array)
 	}
 }
 
-void draw_state(int *array, bool *hl) 
+void draw_state(int *array, bool *hl, int NUM) 
 {
 	render_backsplash();
 
 	// draw current array sequence
-	draw_segments(array, hl);
+	draw_segments(array, hl, NUM);
 
 	// fps handling
 	frameCount++;
@@ -173,12 +173,12 @@ void draw_state(int *array, bool *hl)
 ////////////////////////
 
 // Insertion Sort
-void insertionSort(int *array, int n) 
+void insertionSort(int *array, int NUM) 
 { 
 	int i, element, j; 
-	bool highlight[NUM] = {false};
+	bool highlight[MAX_NUMBER] = {false};
 	
-	for (i = 1; i < n; i++)
+	for (i = 1; i < NUM; i++)
 	{ 
 		element = array[i]; 
 		j = i - 1; 
@@ -189,12 +189,12 @@ void insertionSort(int *array, int n)
 		} 
 		array[j + 1] = element; 
 		highlight[j+1] = true;
-		draw_state(array, highlight);
+		draw_state(array, highlight, NUM);
 		toot(10*array[j], 20);
-		unhighlight_segments(highlight);
+		unhighlight_segments(highlight, NUM);
 	} 
-	unhighlight_segments(highlight);
-	draw_state(array, highlight);
+	unhighlight_segments(highlight, NUM);
+	draw_state(array, highlight, NUM);
 } 
 
 // Heap Sort
@@ -216,33 +216,33 @@ void heapify(int *array, int n, int i)
 	}
 }
   
-void heapSort(int *array, int n) 
+void heapSort(int *array, int n, int NUM) 
 {
-	bool highlight[NUM] = {false};
+	bool highlight[MAX_NUMBER] = {false};
     
 	for (int i = n / 2 - 1; i >= 0; i--) {
 		heapify(array, n, i);
 		highlight[i] = true;
-		draw_state(array, highlight);
-		toot(10*array[i], 20);
-		unhighlight_segments(highlight);
+		draw_state(array, highlight, NUM);
+		toot(9*array[i], 20);
+		unhighlight_segments(highlight, NUM);
 	}
   
   for (int i = n - 1; i >= 0; i--) {
     swap(&array[0], &array[i]);
     heapify(array, i, 0);
 		highlight[i] = true;
-		draw_state(array, highlight);
+		draw_state(array, highlight, NUM);
 		toot(10*array[i], 20);
-		unhighlight_segments(highlight);
+		unhighlight_segments(highlight, NUM);
   }
 }
 
 // Quicksort
-void quickSort(int *array, int first, int last) 
+void quickSort(int *array, int first, int last, int NUM) 
 {
 	int i, j, pivot, tmp;
-	bool highlight[NUM] = {false};
+	bool highlight[MAX_NUMBER] = {false};
 
 	if(first<last) {
 		pivot=first;
@@ -264,29 +264,88 @@ void quickSort(int *array, int first, int last)
 		array[pivot]=array[j];
 		highlight[pivot] = true;
 		array[j]=tmp;
-		draw_state(array, highlight);
+		draw_state(array, highlight, NUM);
 		toot(10*array[i], 20);
-		unhighlight_segments(highlight);
+		unhighlight_segments(highlight, NUM);
 
-		quickSort(array,first,j-1);
+		quickSort(array, first, j-1, NUM);
 		highlight[first] = true;
-		draw_state(array, highlight);
+		draw_state(array, highlight, NUM);
 		toot(10*array[i], 20);
-		unhighlight_segments(highlight);
+		unhighlight_segments(highlight, NUM);
 		
-		quickSort(array,j+1,last);
+		quickSort(array, j+1, last, NUM);
 		highlight[last] = true;
-		draw_state(array, highlight);
+		draw_state(array, highlight, NUM);
 		toot(10*array[i], 20);
-		unhighlight_segments(highlight);
+		unhighlight_segments(highlight, NUM);
 	}
 }
 
-int main()
+int main(int argc, char *argv[])
 {
 	running = true; // running state is acted upon by input()
 	bool SORT_COMPLETE = false;
-	int segment_height[NUM]; // array of segment arrays, primary argument
+	int SEGMENT_NUMBER = -1;
+	int SORT = -1;
+	int opt;
+
+	while ((opt = getopt(argc, argv, "n:s:h")) != -1)
+		switch (opt)
+		{
+			case 'n':
+				SEGMENT_NUMBER = atoi(optarg);
+				break;
+			case 's':
+				SORT = atoi(optarg);
+				break;
+			case 'h':
+				printf("\nPass number of segments with -n <number>\n");
+				printf("Pass sort choice with -s <option>\n");
+				printf("1. Insertion sort.\n");
+				printf("2. Quicksort.\n");
+				printf("3. Heap sort.\n");
+				printf("Example: vsort -n 192 -s 3\n");
+				exit(0);
+			case '?':
+				break;
+		}
+
+	if (SORT == -1) {
+		printf("\nYOU DID NOT SPECIFY A SORTING METHOD.\n");
+		printf("1. Insertion sort.\n");
+		printf("2. Quicksort.\n");
+		printf("3. Heap sort.\n");
+		printf("Sort selection: ");
+		scanf("%d", &SORT);
+	}
+
+	if (SEGMENT_NUMBER == -1) {
+		printf("\nYOU DID NOT SPECIFY NUMBER OF SEGMENTS.\n");
+		printf("Please specify a number between 2 and 640.\n");
+		printf("Number selection: ");
+		scanf("%d", &SEGMENT_NUMBER);
+	}
+
+	int segment_height[SEGMENT_NUMBER]; // array of segment arrays, primary argument
+
+	printf("\nNumber of segments: %d\n", SEGMENT_NUMBER);
+	printf("Algorithm:");
+
+	switch (SORT)
+	{
+		case 1:
+			printf(" insertion sort.");
+			break;
+		case 2:
+			printf(" quicksort.");
+			break;
+		case 3:
+			printf(" heap sort.");
+			break;
+	}
+	
+	printf("\n");
 	
 	// SDL2 initialization
 	if (SDL_Init(SDL_INIT_EVERYTHING) < 0)
@@ -297,21 +356,11 @@ int main()
 	SDL_ShowCursor(0);
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "2");
 
-	// message box surface/texture initialization
-	if(TTF_Init()==-1) 
-	{
-    printf("TTF_Init: %s\n", TTF_GetError());
-    exit(2);
-  }
-
 	// INITIAL CONDITIONS: Seed RNG, populate array and apply Fisher-Yates shuffle.
-	// Please note that draw_initially() contains a usleep() call. usleep() is
-	// now deprecated and should be replaced ny nanosleep() in the future.
-	// !!! Usage of toot allows us to circumvent usleep calls !!!
 	srand(time(NULL));
-	populate_segment_height(segment_height);
-	shuffle_segments(segment_height, NUM);
-	draw_initially(segment_height);
+	populate_segment_height(segment_height, SEGMENT_NUMBER);
+	shuffle_segments(segment_height, SEGMENT_NUMBER);
+	draw_initially(segment_height, SEGMENT_NUMBER);
 	sleep(1); //let them breath it in a second
 
 	// RUNNING STATE //
@@ -330,21 +379,18 @@ int main()
 		input();
 		
 		if(!SORT_COMPLETE) {
-			insertionSort(segment_height, NUM);
-			draw_finally(segment_height);
-			
-			shuffle_segments(segment_height, NUM);
-			draw_initially(segment_height);
-			sleep(1);
-			quickSort(segment_height, 0, NUM - 1);
-			draw_finally(segment_height);
-
-			shuffle_segments(segment_height, NUM);
-			draw_initially(segment_height);
-			sleep(1);
-			heapSort(segment_height, NUM);
-			draw_finally(segment_height);
-
+			if(SORT == 1) {
+				insertionSort(segment_height, SEGMENT_NUMBER);
+				draw_finally(segment_height, SEGMENT_NUMBER);
+			}
+			if (SORT == 2) {			
+				quickSort(segment_height, 0, SEGMENT_NUMBER - 1, SEGMENT_NUMBER);
+				draw_finally(segment_height, SEGMENT_NUMBER);
+			}
+			if (SORT == 3) {
+				heapSort(segment_height, SEGMENT_NUMBER, SEGMENT_NUMBER);
+				draw_finally(segment_height, SEGMENT_NUMBER);
+			}
 			SORT_COMPLETE = true;
 		}
 	}
@@ -352,4 +398,6 @@ int main()
 	SDL_DestroyRenderer(rend);
 	SDL_DestroyWindow(win);
 	SDL_Quit();
+
+	return 0;
 }

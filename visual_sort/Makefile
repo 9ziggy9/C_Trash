@@ -16,7 +16,7 @@ SRCS := main.c toot.c
 OBJS := $(SRCS:.c=.o)
 
 # name of executable
-EXEC := test
+EXEC := vsort
 
 # default recipe
 all: $(EXEC)
