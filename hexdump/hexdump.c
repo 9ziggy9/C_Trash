@@ -19,10 +19,12 @@ void hexdump(void *addr, int len)
             // Output the offset.
             printf("0x%lx:", (i+(intptr_t)addr));
         }
-
-        // Now the hex code for the specific character.
+        
+        //Center space
         if (!(i % 8))
           printf("  ");
+        
+        // Now the hex code for the specific character.
         printf(" %02x", pc[i]);
 
         // And store a printable ASCII character for later.
