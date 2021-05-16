@@ -1,2 +1,2 @@
 # C_Trash
-C programs. Learning how to do stuff.
+C programs. Scratch paper / recycling bin.
